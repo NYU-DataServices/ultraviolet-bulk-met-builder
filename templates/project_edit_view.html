@@ -1,0 +1,29 @@
+{% extends "header.html" %}
+
+{% block content %}
+
+<div class="row">
+    <div class="col-md-12">
+        <h3>Edit Project {{ project_title }}, Metadata Group {{ metgroupid }}</h3>
+        <hr/>
+        <form id="{{ metgroupid }}" action="{{ url_for('update_project', id=metgroupid) }}" method="POST">
+            <label for="text" class="col-md-2 col-form-label">Enter new project title: </label>
+                <div class="col-md-4"><div class="input-group"><input type="text" class="form-control" name="new_project_title">
+                </div>
+            </div>
+        <div class="form-group row">
+                    <div class="offset-4 col-8">
+                        <input class="btn btn-light btn-medium" type="submit" value="Update Project" />
+                    </div>
+                </div>
+            </form>
+        {% for mesg in get_flashed_messages() %}
+        <div class="alert-messages"><p>{{ mesg }}</p></div>
+        {% endfor %}
+        </div>
+    </div>
+</div>
+
+{% include "footer.html" %}
+
+{% endblock %}

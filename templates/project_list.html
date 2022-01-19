@@ -1,0 +1,28 @@
+{% extends "header.html" %}
+
+{% block content %}
+
+<div class="row">
+    <div class="col-md-12">
+        <h3>{{ title_text }}</h3>
+        <hr/>
+            <ul>
+                {% for proj in proj_list %}
+                <li><h4>{{ proj[1]  }}</h4>
+                    <p><ul>
+                        <li><a href="{{ url_for('retrieve_project_detail', metgroupid = proj[0]) }}">view associated records</a></li>
+                        <li><a href="{{ url_for('project_edit', metgroupid = proj[0]) }}">edit project details</a></li>
+                    </ul></p>
+                    <hr/></li>
+                {% endfor %}
+            </ul>
+        {% for mesg in get_flashed_messages() %}
+        <div class="alert-messages"><p>{{ mesg }}</p></div>
+        {% endfor %}
+        </div>
+    </div>
+</div>
+
+{% include "footer.html" %}
+
+{% endblock %}

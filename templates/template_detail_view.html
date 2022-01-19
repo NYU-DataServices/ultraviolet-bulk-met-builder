@@ -1,0 +1,24 @@
+{% extends "header.html" %}
+
+{% block content %}
+
+<div class="row">
+    <div class="col-md-12">
+        <h3>Template {{ template_id }}</h3>
+            <div class="col-md-4">
+                <pre style="background-color: lightgrey;">
+                   <code>
+                       {{ template_json_string }}
+                   </code>
+                </pre>
+            </div>
+        {% for mesg in get_flashed_messages() %}
+        <div class="alert-messages"><p>{{ mesg }}</p></div>
+        {% endfor %}
+        </div>
+    </div>
+</div>
+
+{% include "footer.html" %}
+
+{% endblock %}

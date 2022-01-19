@@ -1,0 +1,31 @@
+{% extends "header.html" %}
+
+{% block content %}
+
+<div class="row">
+    <div class="col-md-12">
+        <h3>Create New Project</h3>
+        <hr/>
+        <form id="{{ next_project_id }}" action="{{ url_for('establish_new_project', id=next_project_id) }}" method="POST">
+            <label for="text" class="col-md-2 col-form-label">New project title: </label><div class="col-md-4"><div class="input-group"><input type="text" class="form-control" name="new_project_title"></div></div>
+        <label for="select" class="col-md-2 col-form-label">Select a template: </label><div class="col-md-4"><select name="selected_template" class="custom-select">
+            {% for template in template_list %}
+                <option value="{{ template[0] }}">Template {{ template[0] }}, {{ template[1] }}</option>
+            {% endfor %}
+        </select></div>
+        <div class="form-group row">
+                    <div class="offset-4 col-8">
+                        <input class="btn btn-light btn-medium" type="submit" value="Create Project" />
+                    </div>
+                </div>
+            </form>
+        {% for mesg in get_flashed_messages() %}
+        <div class="alert-messages"><p>{{ mesg }}</p></div>
+        {% endfor %}
+        </div>
+    </div>
+</div>
+
+{% include "footer.html" %}
+
+{% endblock %}

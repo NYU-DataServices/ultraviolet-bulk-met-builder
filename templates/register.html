@@ -1,0 +1,50 @@
+{% extends "header.html" %}
+
+{% block content %}
+
+<div class="row">
+    <div class="col-md-12">
+
+        {% for mesg in get_flashed_messages() %}
+            <div class="alert-messages"><p>{{ mesg }}</p></div>
+        {% endfor %}
+
+        <h2 class="text-white mt-0" style="padding-top: 2rem; padding-bottom: 1rem;">Register for an account to start transcribing.</h2>
+        <hr class="divider my-4" style="padding-bottom: 1.5rem;" />
+        {% from "_formhelpers.html" import render_field %}
+        <form method=post action="/register">
+          <dl class="labels">
+            {{render_field(form.email)}}
+              <br/>
+            {{render_field(form.password)}}
+              <br/>
+            {{render_field(form.confirm)}}
+              <br/><br/>
+            {{render_field(form.accept_tos)}}
+          </dl>
+          <p><input class="btn btn-light btn-medium js-scroll-trigger" type=submit value="Sign Up"></p>
+        </form>
+    </div>
+</div>
+
+<!-- Data Use Policy Popup -->
+<div id="data_use_Modal" class="modal fade" tabindex="-1" role="dialog">
+  <div class="modal-dialog">
+    <div class="modal-content">
+
+        <div class="modal-header">
+        <h5>Website Data Use Policy</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+        </div>
+
+        <div class="modal-body">
+            <p>This website requires users to provide an email address. This user information is used to enable safe resetting of user passwords. User emails will not be shared with any service or entity.</p>
+        </div>
+    </div>
+  </div>
+</div>
+
+{% include "footer.html" %}
+{% endblock %}

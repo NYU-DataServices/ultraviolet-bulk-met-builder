@@ -1,0 +1,70 @@
+{% extends 'header.html' %}
+
+{% block content %}
+
+<div class="row">
+    <div class="col-md-12">
+
+        <h2>Editor</h2>
+            <p>UltraViolet ID: {{ uvid }}</p>
+            <p>Template ID: {{ tempid }}</p>
+            <p>Project Group: {{ mgrpid }}</p>
+            <p>Add more records based on this record <input type="button" data-toggle="modal" href="#create_more_records" value="+" /></p>
+            <br/><br/>
+            <form id="{{ uv_id }}" action="{{ url_for('record_update', id=uv_id, template=tempid, metgroupid = mgrpid) }}" method="POST">
+
+                    <!-- Start -->
+
+                {{ met_form_html | safe }}
+                 <!-- Stop -->
+
+
+                <div class="form-group row">
+                    <div class="offset-4 col-8">
+                        <input class="btn btn-light btn-medium" type="submit" value="{{ submit_button_value }}" />
+                    </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+<!-- Create More Records Menu Popup -->
+<div id="create_more_records" class="modal fade" tabindex="-1" role="dialog">
+  <div class="modal-dialog">
+    <div class="modal-content">
+        <div class="modal-header">
+        <h5>Create More Records Based on this Record</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+        </div>
+
+        <div class="modal-body">
+            <p>Any updates to record must be saved before adding new records.</p>
+            <p>Enter the number of new records wanted: </p>
+                <form id="{{ uv_id }}_addmultiples_form" action="{{ url_for('addmultiples', id=uv_id, template=tempid) }}" method="POST">
+                    <input type="text" id="{{ uv_id }}_newrecords" name="number_new_records"></input>
+                    <p>Select fields to replicate: </p>
+                    <input type="checkbox" id="selectAll" value="selectAll" checked>Deselect/Select All</input>
+                    {% for field in list_record_fields %}
+                        {% if field[0] == 0 %}
+                        <hr/><h6>{{ field[1] }}</h6>
+                        {% else %}
+                        <p><input type="checkbox" id="scales" name="{{ field[2] }}_{{ field[1] }}_{{ field[3] }}" checked>
+                            <label for="{{ field[1] }}">{{ field[1] }}</label></p>
+                        {% endif %}
+                    {% endfor %}
+                    <br/>
+                    <input type="submit" value="Submit" id="{{ uv_id }}_submit_newrecords"/> <!-- data-dismiss="modal" /> -->
+                </form>
+            </div>
+        </div>
+    </div>
+  </div>
+</div>
+
+{% include "footer.html" %}
+
+{% endblock content %}
+

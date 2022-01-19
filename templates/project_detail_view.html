@@ -1,0 +1,35 @@
+{% extends "header.html" %}
+
+{% block content %}
+
+<div class="row">
+    <div class="col-md-12">
+        <h3>Records for Project {{ project_title }}</h3>
+        <p>Metadata group number {{ metgroupid }}</p>
+        <hr/>
+            <ul>
+                {% for metgroup in met_group_list %}
+                <li><h4>{{ metgroup[1]  }}</h4>
+                    <p><ul>
+                        <li><a href="{{ url_for('record_edit', uv_id = metgroup[0]) }}">edit</a></li>
+                        {% if metgroup[5] == 1 %}
+                        <li>Github status:  pushed</li>
+                        <li><a href="{{ metgroup[2] }}">view on GitHub</a></li>
+                        {% else %}
+                        <li>Github status: not pushed. <a href="{{ url_for('record_git', uv_id = metgroup[0]) }}">Push to Github</a></li>
+                        {% endif %}
+                        <li><a href="{{ metgroup[3] }}">view on UltraViolet</a></li>
+                    </ul></p>
+                    <hr/></li>
+                {% endfor %}
+            </ul>
+        {% for mesg in get_flashed_messages() %}
+        <div class="alert-messages"><p>{{ mesg }}</p></div>
+        {% endfor %}
+        </div>
+    </div>
+</div>
+
+{% include "footer.html" %}
+
+{% endblock %}

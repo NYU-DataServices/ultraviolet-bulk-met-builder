@@ -1,0 +1,42 @@
+{% extends "header.html" %}
+
+{% block content %}
+
+<div class="row">
+    <div class="col-md-12">
+        <h3>Create New Record</h3>
+        <hr/>
+        <form action="{{ url_for('record_create') }}" method="POST">
+
+        <label for="select" class="col-md-2 col-form-label">Select a template: </label>
+            <div class="col-md-4">
+                <select name="selected_template" class="custom-select">
+                {% for template in template_list %}
+                    <option value="{{ template[0] }}">Template {{ template[0] }}, {{ template[1] }}</option>
+                {% endfor %}
+                </select>
+            </div>
+        <label for="select" class="col-md-2 col-form-label">Select an associated project: </label>
+            <div class="col-md-4">
+                <select name="selected_metgroup" class="custom-select">
+                {% for proj in proj_list %}
+                    <option value="{{ proj[0] }}">({{ proj[0] }}): {{ proj[1] }}</option>
+                {% endfor %}
+                </select>
+            </div>
+        <div class="form-group row">
+                    <div class="offset-4 col-8">
+                        <input class="btn btn-light btn-medium" type="submit" value="Create Record" />
+                    </div>
+                </div>
+            </form>
+        {% for mesg in get_flashed_messages() %}
+        <div class="alert-messages"><p>{{ mesg }}</p></div>
+        {% endfor %}
+        </div>
+    </div>
+</div>
+
+{% include "footer.html" %}
+
+{% endblock %}

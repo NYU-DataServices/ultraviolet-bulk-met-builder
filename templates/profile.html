@@ -1,0 +1,18 @@
+{% extends "header.html" %}
+
+{% block content %}
+
+<div class="row">
+    <div class="col-md-12">
+        <h2>Account Info</h2>
+        <hr/>
+        <p>Email: {{ account_email }}</p>
+        <p>Role: {{ role }}</p>
+        <p><a href="{{ url_for('reset_page') }}">Reset Password</a></p>
+        <p><a href="{{ url_for('home') }}">Return to Home</a></p>
+    </div>
+</div>
+
+
+{% include "footer.html" %}
+{% endblock %}

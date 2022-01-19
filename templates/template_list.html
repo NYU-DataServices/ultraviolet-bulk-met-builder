@@ -1,0 +1,27 @@
+{% extends "header.html" %}
+
+{% block content %}
+
+<div class="row">
+    <div class="col-md-12">
+        <h3>{{ title_text }}</h3>
+        <hr/>
+            <ul>
+                {% for template in template_list %}
+                <li><h4>Template #{{ template[0] }}: {{ template[1]  }}</h4>
+                    <p><ul>
+                        <li><a href="{{ url_for('retrieve_template_detail', templateid = template[0]) }}">view or edit template detail</a></li>
+                    </ul></p>
+                    <hr/></li>
+                {% endfor %}
+            </ul>
+        {% for mesg in get_flashed_messages() %}
+        <div class="alert-messages"><p>{{ mesg }}</p></div>
+        {% endfor %}
+        </div>
+    </div>
+</div>
+
+{% include "footer.html" %}
+
+{% endblock %}
