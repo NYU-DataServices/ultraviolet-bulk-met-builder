@@ -1,38 +1,38 @@
+from dotenv import load_dotenv
 import os
 
+load_dotenv()
 
 """
 Site Settings
 """
-APP_SECRET_KEY = ''
-DEBUG = True
-SITE_ROOT = 'https://URL-ROOT'
+APP_SECRET_KEY  = os.environ.get("APP_SECRET_KEY")
+DEBUG           = os.environ.get("DEBUG")
+SITE_ROOT       = os.environ.get("SITE_ROOT")
 
 """
 SQLite
 """
-DB = "ultrav.db"
+DB              = os.environ.get("DB")
 
 """
 Github
-e.g.
-GH_BASEREPO= 'NYU-DataServices/ultraviolet-metadata'
 """
-GH_TOKEN = 'PERSONAL-ACCESS-TOKEN'
-GH_BASEREPO = 'PATH-TO-REPO-EXCLUDING-GH-ROOT-URL'
-GITUSER = 'GITHUB-USERNAME'
-GITUSEREMAIL = 'GITHUB-USER-EMAIL'
+GH_TOKEN        = os.environ.get("GH_TOKEN")
+GH_BASEREPO     = os.environ.get("GH_BASEREPO")
+GITUSER         = os.environ.get("GITUSER")
+GITUSEREMAIL    = os.environ.get("GITUSEREMAIL")
 
 """
 Mail
 """
-MAIL_SERVER = 'smtp.gmail.com'
-MAIL_PORT = 587 # Or use 465
-MAIL_USE_TLS = True
-MAIL_USERNAME = 'USER-EMAIL@gmail.com'
-MAIL_PASSWORD = ''
+MAIL_SERVER     = os.environ.get("MAIL_SERVER")
+MAIL_PORT       = os.environ.get("MAIL_PORT")
+MAIL_USE_TLS    = os.environ.get("MAIL_USE_TLS")
+MAIL_USERNAME   = os.environ.get("MAIL_USERNAME")
+MAIL_PASSWORD   = os.environ.get("MAIL_PASSWORD")
 
 """
 Asset Paths
 """
-_DIR = os.path.join('static', 'DIRECTORY')
+_DIR            = os.path.join('static', 'DIRECTORY')
