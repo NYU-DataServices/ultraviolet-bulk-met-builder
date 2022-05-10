@@ -9,9 +9,6 @@ import json
 from random import random
 import zlib, base64
 
-
-# sys.path.insert(0, 'PATH-TO-PARENT-DIRECTORY-CONTAINING-FLASK-FILES') <-- often needed for WSGI deployment
-
 from utils.db_handlers import *
 from utils.github_handlers import *
 from utils.emailer import *
@@ -100,14 +97,14 @@ def update_project():
 @app.route('/project-create', methods = ['GET', 'POST'])
 def project_create():
     try:
-        templates = retrieve_current_templates()
+    	templates = retrieve_current_templates()
 
         #Retrieve last known project ID number so it can be incremented
-        project_id_list = [i[0] for i in fetch_multiple_met_projects()]
-        project_id_list.sort(reverse=True)
-        next_project_id = str(int(project_id_list[0]) + 1)
+    	project_id_list = [i[0] for i in fetch_multiple_met_projects()] 
+    	project_id_list.sort(reverse=True)
+    	next_project_id = str(int(project_id_list[0]) + 1) if len(project_id_list) > 0 else "1"
 
-        return render_template('project_create.html',
+    	return render_template('project_create.html',
                                next_project_id = next_project_id,
                                template_list = templates)
     except:
@@ -551,4 +548,4 @@ def page_error(e):
 
 
 if __name__ == '__main__':
-    app.run(host='localhost', port=5000, debug = DEBUG)
+     app.run(debug = DEBUG)
