@@ -92,7 +92,7 @@ def field_vals_to_db_rows(field_vals_dict, record_id, template_id):
     field_grouping_num = 1
     for key, val_group in field_vals_dict.items():
         if isinstance(val_group, list):
-            rows_list.append([int(record_id), int(template_id), field_grouping_num, 0, val_group[0], val_group[1]])
+            rows_list.append([record_id, int(template_id), field_grouping_num, 0, val_group[0], val_group[1]])
             field_grouping_num+=1
         else:
             for k, sub_val_group in val_group.items():
@@ -102,7 +102,7 @@ def field_vals_to_db_rows(field_vals_dict, record_id, template_id):
                         sub_val_field_type = sub_val[0].split('-')[1]
                     except:
                         sub_val_field_type = sub_val[0]
-                    rows_list.append([int(record_id), int(template_id), field_grouping_num, added_field, sub_val_field_type, sub_val[1]])
+                    rows_list.append([record_id, int(template_id), field_grouping_num, added_field, sub_val_field_type, sub_val[1]])
             field_grouping_num+=1
     return rows_list
 
