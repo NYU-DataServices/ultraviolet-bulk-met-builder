@@ -4,9 +4,6 @@ from urllib3.exceptions import InsecureRequestWarning
 
 from settings import ENDPOINT_URL, UV_TOKEN
 
-#ENDPOINT_URL = 'https://stagewebapp1.dlib.nyu.edu/api/records'
-#UV_TOKEN = 'iDY5sjYZcUWtjl0VkyYO7NYEwkZzjhaeQ4ZuyYCRpaQ4dbPn9RBs5FuNBk0X'
-
 requests.packages.urllib3.disable_warnings(category=InsecureRequestWarning)
 
 def get_draft_id():
