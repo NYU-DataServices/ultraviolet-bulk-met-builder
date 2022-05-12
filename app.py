@@ -14,6 +14,7 @@ from utils.github_handlers import *
 from utils.emailer import *
 from utils.met_field_models import *
 from utils.form_builder_helpers import *
+from utils.api_handlers import *
 from models import *
 from settings import APP_SECRET_KEY, DEBUG, MAIL_SERVER, \
                     MAIL_PORT, MAIL_USE_TLS, MAIL_USERNAME, MAIL_PASSWORD
@@ -144,16 +145,20 @@ def record_create():
     try:
         template_fields = fetch_met_template(templateid)
         metadata_template = parse_field_info_db(template_fields)
-        ## Following is temporary; eventually in step below we need to make a
-        ## request to the UV api and instantiate a new UV record id
-        uv_id = int(random()*350)
 
-        return render_template("single_record_view.html",
-                               uv_id = uv_id,
-                               tempid = templateid,
-                               mgrpid = metgroupid,
-                               met_form_html = metadata_template,
-                               submit_button_value = "Create Record")
+        # We now ping the UV API and if successful, proceed with UV ID reserved there. Otherwise, indicate an error
+        success_id_pull, uv_id = get_draft_id()
+
+        if success_id_pull:
+            return render_template("single_record_view.html",
+                                   uv_id = uv_id,
+                                   tempid = templateid,
+                                   mgrpid = metgroupid,
+                                   met_form_html = metadata_template,
+                                   submit_button_value = "Create Record")
+        else:
+            flash(uv_id)
+            return render_template('general_use_template.html', title_text="An Error Occurred.")
     except:
         flash("There was an error in creating an entry template.")
         return render_template('general_use_template.html', title_text="An Error Occurred.")
