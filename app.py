@@ -73,6 +73,7 @@ def retrieve_project_detail(metgroupid):
 
 
 @app.route('/project-edit/<metgroupid>', methods = ['POST', 'GET'])
+@login_required
 def project_edit(metgroupid):
     project_title = fetch_single_met_projects(metgroupid)[1]
     if project_title:
@@ -96,16 +97,17 @@ def update_project():
 
 
 @app.route('/project-create', methods = ['GET', 'POST'])
+@login_required
 def project_create():
     try:
-    	templates = retrieve_current_templates()
+        templates = retrieve_current_templates()
 
         #Retrieve last known project ID number so it can be incremented
-    	project_id_list = [i[0] for i in fetch_multiple_met_projects()] 
-    	project_id_list.sort(reverse=True)
-    	next_project_id = str(int(project_id_list[0]) + 1) if len(project_id_list) > 0 else "1"
+        project_id_list = [i[0] for i in fetch_multiple_met_projects()]
+        project_id_list.sort(reverse=True)
+        next_project_id = str(int(project_id_list[0]) + 1) if len(project_id_list) > 0 else "1"
 
-    	return render_template('project_create.html',
+        return render_template('project_create.html',
                                next_project_id = next_project_id,
                                template_list = templates)
     except:
@@ -128,6 +130,7 @@ def establish_new_project():
 """ Record management routes """
 
 @app.route('/record-create-select-options', methods = ['GET'])
+@login_required
 def record_create_select():
     templates = retrieve_current_templates()
     project_list = fetch_multiple_met_projects()
@@ -167,6 +170,7 @@ def record_create():
 
 
 @app.route('/record-edit/<uv_id>', methods = ['POST', 'GET'])
+@login_required
 def record_edit(uv_id):
     met_field_vals = fetch_met_fields_vals(uv_id)
     templateid = met_field_vals[0][1]
@@ -214,8 +218,12 @@ def record_update():
 
 
 @app.route('/record-git/<uv_id>', methods = ['GET'])
+@login_required
 def record_git(uv_id):
-    # Note: we need to deploy a lock on this so a direct hit on this URL will not cause a problem
+    user = User(session.get('mets_user', None))
+    if not user.is_admin(1):
+        return abort(403)
+
     json_hash = fetch_record_json(uv_id)[2]
     if json_hash:
         json_string = json.dumps(json.loads(zlib.decompress(json_hash).decode('utf-8')), indent = 4)
@@ -235,6 +243,7 @@ def record_git(uv_id):
 
 
 @app.route('/add-multiple-records', methods = ['POST', 'GET'])
+@login_required
 def addmultiples():
     uv_id = request.args.get('id')
     template_id = request.args.get('template')
@@ -428,7 +437,7 @@ def profile():
         role = str(User(session.get('mets_user', None)).access)
         return render_template("profile.html", account_email=email, role=roles[role])
     except:
-        """ If user fails to be retrieved because user_transcriber ID has expired, send back to login """
+        """ If user fails to be retrieved because user ID has expired, send back to login """
         form = LoginForm(request.form)
         return render_template('login.html', form=form)
 
@@ -444,7 +453,7 @@ def forgot_password():
             temp_pw, expire_date, unique_token = build_reset_pw()
             if set_reset_pw(email, generate_password_hash(temp_pw), expire_date, 0, unique_token):
                 send_reset_email(email, temp_pw, mail, unique_token)
-                flash("A temporary password has been sent to your email address. Please check your email and enter the password below.")
+                flash("A temporary password has been sent to your email address (keep an eye on your spam folder if the email does not arrive). Please check your email and enter the password below.")
                 return redirect(url_for('forgot_password_check', reset_email=email, next=unique_token))
             else:
                 flash("An error occurred in sending a temporary password. Please try again.")
@@ -505,10 +514,8 @@ def reset_forgot():
         new_password = generate_password_hash(form.new_password.data)
         change_user = update_user(in_email, new_password)
         if change_user:
-            flash(Markup(
-                """<a class="btn btn-light btn-medium js-scroll-trigger" href=" """) + url_for(
-                'transcribe_segment') + Markup(""" ">Start Transcribing</a> """))
-            return render_template('general_use_template.html', title_text = "Password succesfully updated!")
+            flash("Password succesfully updated! Please login to continue.")
+            return redirect(url_for('login') )
 
         else:
             flash("An error occurred in updating password. Please try again.")
