@@ -5,6 +5,29 @@
 <div class="row">
     <div class="col-md-12">
         <h2>Admin Page</h2>
+        <ul>
+                {% for usr in ls_users %}
+                <li><h4>User {{ usr[0]  }}: {{ usr[1] }} </h4>
+                    <p>Role: {% if usr[2] == 2 %}Super admin
+                            {% elif usr[2] == 1 %}Admin
+                            {% else %}User
+                            {% endif %}</p>
+                    {% if current_user.is_admin(2) %}
+                        {% if usr[2] == 0 %}
+                            <form method="POST" action="{{ url_for('change_user', user=usr[0], changerole=1) }}">
+                            <input class="btn btn-light btn-medium js-scroll-trigger" type=submit value="Make admin">
+                            </form>
+                        {% elif usr[2] == 1 %}
+                            <form method="POST" action="{{ url_for('change_user', user=usr[0], changerole=0) }}">
+                            <input class="btn btn-light btn-medium js-scroll-trigger" type=submit value="Remove admin">
+                            </form>
+                        {% elif usr[2] == 2 %}
+                            <p>Super admin</p>
+                        {% endif %}
+                    {% endif %}
+                    <hr/></li>
+                {% endfor %}
+            </ul>
         <hr/>
         {% for mesg in get_flashed_messages() %}
         <div class="alert-messages"><p>{{ mesg }}</p></div>

@@ -265,6 +265,18 @@ def retrieve_user(email=False, user_id=False):
         con.close()
 
 
+def retrieve_all_users():
+    try:
+        with sqlite3.connect(DB) as con:
+            cur = con.cursor()
+            cur.execute("""SELECT user_id, email, is_admin FROM users""")
+            return cur.fetchall()
+    except:
+        return False
+    finally:
+        con.close()
+
+
 def set_user(email, password, access):
     try:
         with sqlite3.connect(DB) as con:
@@ -283,6 +295,19 @@ def update_user(email, password):
         with sqlite3.connect(DB) as con:
             cur = con.cursor()
             cur.execute("""UPDATE users SET password_hash = ? WHERE email = ?""",(password, email) )
+            con.commit()
+        return True
+    except:
+        return False
+    finally:
+        con.close()
+
+
+def update_user_role(user, role):
+    try:
+        with sqlite3.connect(DB) as con:
+            cur = con.cursor()
+            cur.execute("""UPDATE users SET is_admin = ? WHERE user_id = ?""",(role, user) )
             con.commit()
         return True
     except:
