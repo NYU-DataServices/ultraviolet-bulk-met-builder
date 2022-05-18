@@ -532,13 +532,37 @@ def reset_forgot():
 @login_required
 def system_admin():
     user = User(session.get('mets_user', None))
-    if not user.is_admin(1):
+    if user.is_admin(0):
         return abort(403)
     try:
-        return render_template("system.html")
+        list_all_users = retrieve_all_users()
+        if list_all_users:
+            return render_template("system.html", ls_users = list_all_users)
+        else:
+            flash("There was an error in retrieving system info.")
+            return render_template('general_use_template.html', title_text="An Error Occurred.")
     except:
         flash("There was an error in retrieving system info.")
         return render_template('general_use_template.html', title_text="An Error Occurred.")
+
+
+@app.route('/change-user', methods=['POST'])
+def change_user():
+    user_change = request.args.get('user')
+    new_role = request.args.get('changerole')
+    print("User to change: ", user_change)
+    print("Role change to", new_role)
+    try:
+        success_update_user_role = update_user_role(user_change, new_role)
+        if success_update_user_role:
+            flash("User role successfully updated")
+            return render_template("system.html")
+        else:
+            flash("There was an error in updating user role")
+            return render_template("system.html")
+    except:
+        flash("There was an error in updating user role")
+        return render_template("system.html")
 
 
 """ Error handlers """
