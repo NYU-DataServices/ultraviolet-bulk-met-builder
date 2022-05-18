@@ -363,7 +363,7 @@ def login():
                 session['mets_user'] = user.id
 
                 next = request.args.get('next')
-                if next not in ['', 'transcriber']:
+                if next not in ['', 'metbuilder']:
                     return abort(403)
                 return render_template('general_use_template.html', title_text = "Login successful!" )
             else:
