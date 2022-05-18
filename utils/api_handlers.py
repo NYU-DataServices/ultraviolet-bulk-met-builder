@@ -1,5 +1,6 @@
 import requests
 import json
+from random import random
 from urllib3.exceptions import InsecureRequestWarning
 
 from settings import ENDPOINT_URL, UV_TOKEN
@@ -46,4 +47,14 @@ def get_draft_id():
     return False, "Unable to draft record. Make sure UV website is working."
 
 
+def get_temp_random_id():
+    char_options = ["1","2","3","4","5","6","7","8","9","a","b","c","d","e",
+                    "f","g","h","j","k","m","n","p","q","r","s","t","u","v",
+                    "w","x","y","z"]
 
+    temp_id = ""
+    for i in range(0, 10):
+        temp_id += char_options[int(random() * len(char_options))]
+        if i == 4:
+            temp_id += "-"
+    return True, temp_id

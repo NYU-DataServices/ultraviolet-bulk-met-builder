@@ -147,7 +147,9 @@ def record_create():
         metadata_template = parse_field_info_db(template_fields)
 
         # We now ping the UV API and if successful, proceed with UV ID reserved there. Otherwise, indicate an error
-        success_id_pull, uv_id = get_draft_id()
+        # For now, we substitute a random ID maker until UV goes into production
+        #success_id_pull, uv_id = get_draft_id()
+        success_id_pull, uv_id = get_temp_random_id()
 
         if success_id_pull:
             return render_template("single_record_view.html",
