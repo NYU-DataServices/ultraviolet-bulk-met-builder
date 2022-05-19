@@ -221,7 +221,7 @@ def record_update():
 @login_required
 def record_git(uv_id):
     user = User(session.get('mets_user', None))
-    if not user.is_admin(1):
+    if user.is_admin(0):
         return abort(403)
 
     json_hash = fetch_record_json(uv_id)[2]
