@@ -433,7 +433,7 @@ def reset_page():
 def profile():
     try:
         email = User(session.get('mets_user', None)).email
-        roles = {"0":"User", "1":"Admin"}
+        roles = {"0":"User", "1":"Admin", "2": "Super Admin"}
         role = str(User(session.get('mets_user', None)).access)
         return render_template("profile.html", account_email=email, role=roles[role])
     except:
