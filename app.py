@@ -173,7 +173,7 @@ def record_create():
 @login_required
 def record_edit(uv_id):
     met_field_vals = fetch_met_fields_vals(uv_id)
-    templateid = met_field_vals[0][1]
+    templateid = met_field_vals[0][2]
     metgroupid = pluck_metgroup_num(uv_id)
     if met_field_vals:
         template_fields = fetch_met_template(templateid)
@@ -196,7 +196,7 @@ def record_edit(uv_id):
 @app.route('/record-update', methods = ['POST', 'GET'])
 def record_update():
     uv_id, template_id, metgroupid = request.args.get('id'), request.args.get('template'), request.args.get('metgroupid')
-    record_title = [i[1] for i in request.form.items() if i[0].split("_")[1] == "title"][0]
+    record_title = [i[1] for i in request.form.items() if i[0].split("_")[2] == "title"][0]
 
     # DB modifications
     grouped_dict = form_inputs_parser(request.form)[0]
@@ -224,19 +224,24 @@ def record_git(uv_id):
     if user.is_admin(0):
         return abort(403)
 
-    json_hash = fetch_record_json(uv_id)[2]
-    if json_hash:
-        json_string = json.dumps(json.loads(zlib.decompress(json_hash).decode('utf-8')), indent = 4)
-        githubURL = 'metadata/UC-{}/ultraviolet.json'.format(uv_id)
-        success_push_github = uv_repo_push(githubURL, "Commit File", json_string, "main", update=False)
-        if success_push_github:
-            record_github_status(uv_id, 'https://github.com/' +
-                                 GH_BASEREPO + '/tree/main/' +
-                                 githubURL.replace('/ultraviolet.json', ''))
-            return home()
-        else:
-            flash("There was an error in pushing to Github.")
-            return render_template('general_use_template.html', title_text="An Error Occurred.")
+    try:
+        json_hash = fetch_record_json(uv_id)[2]
+    except TypeError:
+        flash("This record has not yet been saved. Please edit/update the record first before pushing to Github.")
+        return redirect(url_for('retrieve_project_detail', metgroupid = request.args.get('metgroupnum')))
+
+    json_string = json.dumps(json.loads(zlib.decompress(json_hash).decode('utf-8')), indent = 4)
+    githubURL = 'metadata/UC-{}/ultraviolet.json'.format(uv_id)
+    success_push_github = uv_repo_push(githubURL, "Commit File", json_string, "main", update=False)
+    if success_push_github:
+        record_github_status(uv_id, 'https://github.com/' +
+                             GH_BASEREPO + '/tree/main/' +
+                             githubURL.replace('/ultraviolet.json', ''))
+        flash("Successfully pushed to Github")
+        return home()
+    else:
+        flash("There was an error in pushing to Github.")
+        return render_template('general_use_template.html', title_text="An Error Occurred.")
 
     flash("There was an error in retrieving json.")
     return render_template('general_use_template.html', title_text="An Error Occurred.")
@@ -250,39 +255,47 @@ def addmultiples():
     metgroupid = pluck_metgroup_num(uv_id)
 
     # Need to validate the following on modal form itself so we can trust it is a valid int with reasonable range
-    number_new_records = int(request.form['number_new_records'])
+    try:
+        number_new_records = int(request.form['number_new_records'])
+    except:
+        number_new_records = 1
 
-    duplicate_field_vals_iloc = [int(i[0].split('_')[2]) for i in request.form.items() if i[0] != 'number_new_records']
+    duplicate_field_vals_fieldnums = [int(i[0].split('_')[0]) for i in request.form.items() if i[0] != 'number_new_records']
     met_field_vals = fetch_met_fields_vals(uv_id)
+
+    # Title field is given special treatment here, so we find out what the field number is for this template for title
+    # If the user has not selected to duplicate the title, a placeholder title name will be created (to give list of
+    # records in summary view a name to diplay
+
+    title_field_num = pluck_title_field_num(template_id, "Title")
 
     try:
         for i in range(0, number_new_records):
             vals_rows = []
-            new_uv_id = int(random() * 350)
+            new_uv_id = get_temp_random_id()[1]
             for rec in met_field_vals:
+                if rec[1] in duplicate_field_vals_fieldnums:
+                    insert_val = rec[6]
+                    if rec[1] == title_field_num:
+                        insert_val = insert_val + '(' + str(i+1) + ')'
+                        record_title = insert_val
+                else:
+                    insert_val = ''
+                    if rec[1] == title_field_num:
+                        insert_val = 'Placeholder Title ' + '(' + str(i+1) + ')'
+                        record_title = insert_val
+
                 vals_rows.append((new_uv_id,
-                                  template_id,
-                                  rec[2],
+                                  rec[1],
+                                  int(template_id),
                                   rec[3],
                                   rec[4],
-                                  ''))
-            for iloc in duplicate_field_vals_iloc:
-                vals_rows[iloc] = (new_uv_id,
-                                   template_id,
-                                   met_field_vals[iloc][2],
-                                   met_field_vals[iloc][3],
-                                   met_field_vals[iloc][4],
-                                   met_field_vals[iloc][5])
-            field_order_num = pluck_title_fieldorder_num(template_id, "Title")
-            for val in vals_rows:
-                if val[2] == field_order_num:
-                    if val[5] != '':
-                        record_title = val[5]
-                    else:
-                        record_title = 'Placeholder Title'
+                                  rec[5],
+                                  insert_val))
             record_met_field_vals(new_uv_id, vals_rows)
-
             record_metgroup(new_uv_id, record_title, metgroupid)
+
+        flash("Additional records created. Click on Project List and select Project to view list of new records.")
         return home()
 
     except:
@@ -296,7 +309,6 @@ def addmultiples():
 def list_templates():
     try:
         template_list = retrieve_current_templates()
-        print(template_list)
         if template_list:
             return render_template('template_list.html',
                                    title_text="UltraViolet Template List",
@@ -550,8 +562,6 @@ def system_admin():
 def change_user():
     user_change = request.args.get('user')
     new_role = request.args.get('changerole')
-    print("User to change: ", user_change)
-    print("Role change to", new_role)
     try:
         success_update_user_role = update_user_role(user_change, new_role)
         if success_update_user_role:

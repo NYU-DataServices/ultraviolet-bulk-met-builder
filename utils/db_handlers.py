@@ -116,7 +116,7 @@ def record_met_field_vals(uv_id, vals_rows):
             cur = con.cursor()
             cur.execute("""DELETE FROM metadata_ind_fields WHERE uv_id = ?""",(uv_id,) )
             for row in vals_rows:
-                cur.execute("""INSERT INTO metadata_ind_fields VALUES (?,?,?,?,?,?)""", row)
+                cur.execute("""INSERT INTO metadata_ind_fields VALUES (?,?,?,?,?,?,?)""", row)
             con.commit()
         return True
     except:
@@ -140,13 +140,13 @@ def record_met_json(uv_id, hash_json_record):
         con.close()
 
 
-def pluck_title_fieldorder_num(template_id, title_label):
+def pluck_title_field_num(template_id, title_label):
     """Finds index number of title field so as to identify title and allow it to be added to recordsummary table"""
 
     try:
         with sqlite3.connect(DB) as con:
             cur = con.cursor()
-            cur.execute("""SELECT field_order FROM met_template_field_info WHERE template_num = ? AND parent_field = 0 AND label_name = ?""", (template_id, title_label))
+            cur.execute("""SELECT field_num FROM met_template_field_info WHERE template_num = ? AND parent_field = 0 AND label_name = ?""", (template_id, title_label))
             rows = cur.fetchall()
             return rows[0][0]
     except:
@@ -357,7 +357,6 @@ def check_reset_pw(user_email, temp_pw):
             cur = con.cursor()
             cur.execute("""SELECT * FROM user_reset WHERE user_email = ? ORDER BY rowid DESC LIMIT 1""", (user_email,))
             rows = cur.fetchall()
-            print(rows)
             if len(rows) == 1 and rows[0][3] != 1:
                 if not check_if_expired(rows[0][2]):
                     if check_password_hash(rows[0][1], temp_pw):

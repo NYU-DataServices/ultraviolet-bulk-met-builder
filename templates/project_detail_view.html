@@ -16,7 +16,7 @@
                         <li>Github status:  pushed</li>
                         <li><a href="{{ metgroup[2] }}">view on GitHub</a></li>
                         {% else %}
-                        <li>Github status: not pushed. {% if current_user.is_authenticated and (current_user.is_admin(2) or current_user.is_admin(1)) %}<a href="{{ url_for('record_git', uv_id = metgroup[0]) }}">Push to Github</a>{% endif %}</li>
+                        <li>Github status: not pushed. {% if current_user.is_authenticated and (current_user.is_admin(2) or current_user.is_admin(1)) %}<a href="{{ url_for('record_git', uv_id = metgroup[0], metgroupnum = metgroupid) }}">Push to Github</a>{% endif %}</li>
                         {% endif %}
                         <!-- <li><a href="{{ metgroup[3] }}">view on UltraViolet</a></li> -->
                     </ul></p>

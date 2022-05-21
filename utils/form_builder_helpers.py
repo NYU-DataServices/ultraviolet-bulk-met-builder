@@ -22,13 +22,13 @@ def form_inputs_parser(request_form_dict):
     field_key_order = []
     for field_name, value in request_form_dict.items():
         grouping_key_parts = field_name.split("_")
-        grouping_key, field_type = grouping_key_parts[-1], grouping_key_parts[0]
+        grouping_key, field_number, field_type = grouping_key_parts[-1], grouping_key_parts[1], grouping_key_parts[0]
         if grouping_key not in field_key_order:
             field_key_order.append(grouping_key)
         try:
-            initial_grouped_fields_dict[grouping_key].append([field_type, value])
+            initial_grouped_fields_dict[grouping_key].append([field_number, field_type, value])
         except:
-            initial_grouped_fields_dict[grouping_key] = [[field_type, value]]
+            initial_grouped_fields_dict[grouping_key] = [[field_number, field_type, value]]
 
     final_grouped_fields_dict = {}
     for field_grouping in initial_grouped_fields_dict:
@@ -92,17 +92,17 @@ def field_vals_to_db_rows(field_vals_dict, record_id, template_id):
     field_grouping_num = 1
     for key, val_group in field_vals_dict.items():
         if isinstance(val_group, list):
-            rows_list.append([record_id, int(template_id), field_grouping_num, 0, val_group[0], val_group[1]])
+            rows_list.append([record_id, val_group[0], int(template_id), field_grouping_num, 0, val_group[1], val_group[2]])
             field_grouping_num+=1
         else:
             for k, sub_val_group in val_group.items():
                 for sub_val in sub_val_group:
-                    added_field = 1 if sub_val[0][0:3] == "add" else 0
+                    added_field = 1 if sub_val[1][0:3] == "add" else 0
                     try:
-                        sub_val_field_type = sub_val[0].split('-')[1]
+                        sub_val_field_type = sub_val[1].split('-')[1]
                     except:
-                        sub_val_field_type = sub_val[0]
-                    rows_list.append([record_id, int(template_id), field_grouping_num, added_field, sub_val_field_type, sub_val[1]])
+                        sub_val_field_type = sub_val[1]
+                    rows_list.append([record_id, sub_val[0], int(template_id), field_grouping_num, added_field, sub_val_field_type, sub_val[2]])
             field_grouping_num+=1
     return rows_list
 
@@ -141,18 +141,20 @@ def multi_single_field_helper(field_depth, default_value=""):
     head_val = False if field_depth["header_val"] == "NONE" else field_depth["header_val"]
 
     if field_depth["field_class_type"] == "SingleField":
-        return SingleField(field_depth["label_name"],
+        return SingleField(field_depth["field_num"],
+                           field_depth["label_name"],
                            field_depth["json_name"],
                            default_value,
                            main_label_size=head_val)
     elif field_depth["field_class_type"] == "EnumField":
-        return EnumField(field_depth["label_name"],
+        return EnumField(field_depth["field_num"],
+                         field_depth["label_name"],
                          field_depth["json_name"],
                          [i for i in field_depth["enum_options"].split(',')],
                          default_value,
                          main_label_size=head_val)
     elif field_depth["field_class_type"] == "IdentifierField":
-        return IdentifierField(default_vals_list=default_value)
+        return IdentifierField(field_depth["field_num"], default_vals_list=default_value)
 
 
 
@@ -270,7 +272,7 @@ def template_html_field_analyzer(field_num, template_fields, list_default_values
     # Must be a SingleField or EnumField if no children present
     if len(template_fields[field_num]["children"]) == 0:
         met_form_template.append(
-            multi_single_field_helper(template_fields[field_num], list_default_values[vcounter][5]).html())
+            multi_single_field_helper(template_fields[field_num], list_default_values[vcounter][6]).html())
         vcounter += 1
     elif template_fields[field_num]["field_class_type"] == "MultiVals":
         list_multivals = []
@@ -284,24 +286,24 @@ def template_html_field_analyzer(field_num, template_fields, list_default_values
                             if subfield_depth2["field_class_type"] == "IdentifierField":
                                 sub_multi_single_fields.append(
                                     multi_single_field_helper(subfield_depth2,
-                                                            [list_default_values[vcounter][5],
-                                                            list_default_values[vcounter + 1][5]])
+                                                            [list_default_values[vcounter][6],
+                                                            list_default_values[vcounter + 1][6]])
                                     )
                                 vcounter += 2
                             else:
                                 sub_multi_single_fields.append(
-                                    multi_single_field_helper(subfield_depth2, list_default_values[vcounter][5])
+                                    multi_single_field_helper(subfield_depth2, list_default_values[vcounter][6])
                                     )
                                 vcounter += 1
                         else:
                             built_fields_list = []
                             for i in subfield_depth2["children"]:
                                 if i["field_class_type"] == "IdentifierField":
-                                    built_fields_list.append(multi_single_field_helper(i, [list_default_values[vcounter][5],
-                                                                                           list_default_values[vcounter + 1][5]]))
+                                    built_fields_list.append(multi_single_field_helper(i, [list_default_values[vcounter][6],
+                                                                                           list_default_values[vcounter + 1][6]]))
                                     vcounter += 2
                                 else:
-                                    built_fields_list.append(multi_single_field_helper(i, list_default_values[vcounter][5]))
+                                    built_fields_list.append(multi_single_field_helper(i, list_default_values[vcounter][6]))
                                     vcounter += 1
                             sub_multi_single_fields.append(
                                 MultiSingleField(subfield_depth2["label_name"], subfield_depth2["json_name"],
@@ -317,13 +319,13 @@ def template_html_field_analyzer(field_num, template_fields, list_default_values
                     if subfield_depth1["field_class_type"] == "IdentiferField":
                         multidictmixer.append(
                             multi_single_field_helper(subfield_depth1,
-                                                    [list_default_values[vcounter][5],
-                                                    list_default_values[vcounter + 1][5]])
+                                                    [list_default_values[vcounter][6],
+                                                    list_default_values[vcounter + 1][6]])
                             )
                         vcounter += 2
                     else:
                         multidictmixer.append(multi_single_field_helper(subfield_depth1,
-                                                                        list_default_values[vcounter][5]))
+                                                                        list_default_values[vcounter][6]))
                         vcounter += 1
 
             list_multivals.append(MultiDictMixer(multidictmixer))
@@ -339,11 +341,11 @@ def template_html_field_analyzer(field_num, template_fields, list_default_values
         list_multivals = []
         for subfield in template_fields[field_num]["children"]:
             if subfield["field_class_type"] == "IdentifierField":
-                list_multivals.append(multi_single_field_helper(subfield, [list_default_values[vcounter][5],
-                                                                           list_default_values[vcounter + 1][5]]))
+                list_multivals.append(multi_single_field_helper(subfield, [list_default_values[vcounter][6],
+                                                                           list_default_values[vcounter + 1][6]]))
                 vcounter += 2
             else:
-                list_multivals.append(multi_single_field_helper(subfield, list_default_values[vcounter][5]))
+                list_multivals.append(multi_single_field_helper(subfield, list_default_values[vcounter][6]))
                 vcounter += 1
 
         accord_val = True if template_fields[field_num]["accordion"] == "True" else False
@@ -367,30 +369,30 @@ def parse_previous_field_info_db(template_fields, list_default_values):
     """
     template_fields = arrange_children(template_fields)
     accordion_default_values = {}
-    for d_val in [i for i in list_default_values if i[3] == 1]:
+    for d_val in [i for i in list_default_values if i[4] == 1]:
         try:
-            accordion_default_values[d_val[2]].append(d_val)
+            accordion_default_values[d_val[3]].append(d_val)
         except:
-            accordion_default_values[d_val[2]] = [d_val]
-    list_default_values = [i for i in list_default_values if i[3] != 1]
+            accordion_default_values[d_val[3]] = [d_val]
+    list_default_values = [i for i in list_default_values if i[4] != 1]
 
     vcounter = 0
     met_form_template = []
-    for field_num in sorted(set(list(template_fields.keys()))):
-        met_addendum_list, vcounter = template_html_field_analyzer(field_num,
+    for field_group_num in sorted(set(list(template_fields.keys()))):
+        met_addendum_list, vcounter = template_html_field_analyzer(field_group_num,
                                                                    template_fields,
                                                                    list_default_values,
                                                                    vcounter)
         met_form_template+=met_addendum_list
 
-        if field_num in accordion_default_values:
+        if field_group_num in accordion_default_values:
             # Check to see if we have multiple added field groupings:
-            num_fields_per_grouping = len([i for i in list_default_values if i[2] == field_num])
-            chunked_list = [accordion_default_values[field_num][i:i + num_fields_per_grouping] \
-                            for i in range(0, len(accordion_default_values[field_num]), num_fields_per_grouping)]
+            num_fields_per_grouping = len([i for i in list_default_values if i[3] == field_group_num])
+            chunked_list = [accordion_default_values[field_group_num][i:i + num_fields_per_grouping] \
+                            for i in range(0, len(accordion_default_values[field_group_num]), num_fields_per_grouping)]
             r_count = 2
             for vals_grouping in chunked_list:
-                accordion_html_list, local_counter = template_html_field_analyzer(field_num, template_fields, vals_grouping, 0)
+                accordion_html_list, local_counter = template_html_field_analyzer(field_group_num, template_fields, vals_grouping, 0)
 
                 accordion_f_block = BeautifulSoup(accordion_html_list[0], "lxml")
                 original_f_block = BeautifulSoup(met_form_template[-1], "lxml")
