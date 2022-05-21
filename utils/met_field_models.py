@@ -11,7 +11,8 @@ import re
 class SingleField():
     """Used for key-value pairs with a single string as value and represented as text input in html form"""
 
-    def __init__(self, labelName, jsonName, default_value, main_label_size=False):
+    def __init__(self, fieldNumber, labelName, jsonName, default_value, main_label_size=False):
+        self.fieldNumber = fieldNumber
         self.labelName = labelName
         self.jsonName = jsonName
         self.default_value = default_value
@@ -32,14 +33,15 @@ class SingleField():
 
         return '<label for="text" class="col-md-2 col-form-label">{}</label>' \
                '<div class="col-md-4"><div class="input-group">' \
-               '<input type="text" class="form-control" id="{}" name="singleField_{}_{}_{}" {}>' \
-               '</div></div>'.format(insert_label, elct, self.jsonName, elct, parent_append_id, pl_hlder)
+               '<input type="text" class="form-control" id="{}" name="singleField_{}_{}_{}_{}" {}>' \
+               '</div></div>'.format(insert_label, elct, self.fieldNumber, self.jsonName, elct, parent_append_id, pl_hlder)
 
 
 class EnumField():
     """Used for key-value pairs with a single string as value and represented as dropdown input in html form"""
 
-    def __init__(self, labelName, jsonName, default_list_values, default_value="", main_label_size=False):
+    def __init__(self, fieldNumber, labelName, jsonName, default_list_values, default_value="", main_label_size=False):
+        self.fieldNumber = fieldNumber
         self.labelName = labelName
         self.jsonName = jsonName
         self.default_list_values = default_list_values
@@ -56,8 +58,8 @@ class EnumField():
             insert_label = self.labelName
 
         label_html = '<label for="select" class="col-md-2 col-form-label">{}</label>' \
-                     '<div class="col-md-4"><select id="{}" name="enumField_{}_{}_{}" ' \
-                     'class="custom-select">'.format(insert_label, elct, self.jsonName, elct, parent_append_id) + \
+                     '<div class="col-md-4"><select id="{}" name="enumField_{}_{}_{}_{}" ' \
+                     'class="custom-select">'.format(insert_label, elct, self.fieldNumber, self.jsonName, elct, parent_append_id) + \
                     "".join(['<option value="{}">{}</option>'.format(defval.lower(), defval)
                              for defval in self.default_list_values]) + \
                      '</select></div>'
@@ -211,7 +213,8 @@ class MultiSingleField():
 class IdentifierField():
     """Used to generate the full identifer field set (label, identifier value, identifier type)"""
 
-    def __init__(self, main_label_size=False, default_vals_list=False):
+    def __init__(self, fieldNumber, main_label_size=False, default_vals_list=False):
+        self.fieldNumber = fieldNumber
         self.placeholder = "e.g. 10.1093/ajae/aaq063"
         self.schema_options = ["ror","doi","handle"]
         self.jsonName = "identifiers"
@@ -232,10 +235,10 @@ class IdentifierField():
             insert_label = "Identifier"
         label_html = '<label for="select" class="col-md-2 col-form-label">{}</label>' \
                      '<div class="col-md-4"><input type="text" class="form-control" ' \
-                     'id="{}" name="identifierField_identifier_{}_{}" {}>'.format(insert_label, elct, elct, parent_append_id, pl_hlder) + \
+                     'id="{}" name="identifierField_{}_identifier_{}_{}" {}>'.format(insert_label, elct, self.fieldNumber, elct, parent_append_id, pl_hlder) + \
                      '</div>' + '<label for="select" class="col-md-2 col-form-label">Select schema</label>' \
-                     '<div class="col-md-4"><select id="select_{}" name="identifierSelectField_scheme_{}_{}" ' \
-                      'class="custom-select">'.format(elct, elct, parent_append_id) + \
+                     '<div class="col-md-4"><select id="select_{}" name="identifierSelectField_{}_scheme_{}_{}" ' \
+                      'class="custom-select">'.format(elct, self.fieldNumber, elct, parent_append_id) + \
                      "".join(['<option value="{}">{}</option>'.format(defval.lower(), defval) for defval in self.schema_options]) + '</select></div>'
         if self.default_vals_list in [False, ""]:
             return label_html
