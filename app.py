@@ -254,7 +254,7 @@ def addmultiples():
     template_id = request.args.get('template')
     metgroupid = pluck_metgroup_num(uv_id)
 
-    # Need to validate the following on modal form itself so we can trust it is a valid int with reasonable range
+    # This needed in case user fails to enter anything for number of records to make; defaults to 1
     try:
         number_new_records = int(request.form['number_new_records'])
     except:
