@@ -11,15 +11,17 @@
                 {% for metgroup in met_group_list %}
                 <li><h4>{{ metgroup[1]  }}</h4>
                     <p><ul>
-                        <li><a href="{{ url_for('record_edit', uv_id = metgroup[0]) }}">edit</a></li>
+                        <li><a href="{{ url_for('record_edit', uv_id = metgroup[0]) }}">Edit</a></li>
                         {% if metgroup[5] == 1 %}
-                            <li>Github status:  pushed</li>
-                            <li><a href="{{ metgroup[2] }}">view on GitHub</a></li>
-                            <li>{% if current_user.is_authenticated and (current_user.is_admin(2) or current_user.is_admin(1)) %}<a href="{{ url_for('record_git', uv_id = metgroup[0], metgroupnum = metgroupid, update = "True") }}">update on Github</a>{% endif %}</li>
+                            <li>Github status: pushed</li>
+                            <li><a href="{{ metgroup[2] }}">View on GitHub</a></li>
+                            <li>{% if current_user.is_authenticated and (current_user.is_admin(2) or current_user.is_admin(1)) %}<a href="{{ url_for('record_git', uv_id = metgroup[0], metgroupnum = metgroupid, update = "True") }}">Update on Github</a>{% endif %}</li>
                         {% else %}
                             <li>Github status: not pushed</li>
-                            <li>{% if current_user.is_authenticated and (current_user.is_admin(2) or current_user.is_admin(1)) %}<a href="{{ url_for('record_git', uv_id = metgroup[0], metgroupnum = metgroupid, update = "") }}">push to Github</a>{% endif %}</li>
+                            <li>{% if current_user.is_authenticated and (current_user.is_admin(2) or current_user.is_admin(1)) %}<a href="{{ url_for('record_git', uv_id = metgroup[0], metgroupnum = metgroupid, update = "") }}">Push to Github</a>{% endif %}</li>
                         {% endif %}
+                        <li><a href="{{ url_for('record_delete', uv_id = metgroup[0]) }}">Delete record</a>
+                        <br/><em>Note: This will not remove it from Github if it has been pushed.</em></li>
                         <!-- <li><a href="{{ metgroup[3] }}">view on UltraViolet</a></li> -->
                     </ul></p>
                     <hr/></li>

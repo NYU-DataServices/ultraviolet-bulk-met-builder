@@ -61,15 +61,19 @@ def list_projects():
 
 @app.route('/projects/<metgroupid>', methods = ['GET'])
 def retrieve_project_detail(metgroupid):
-    met_group_list, project_title = fetch_met_group_records(metgroupid)
-    if met_group_list and project_title:
-        return render_template("project_detail_view.html",
-                               project_title = project_title,
-                               metgroupid = metgroupid,
-                               met_group_list = met_group_list)
-
-    flash("There was an error in retrieving the project detail.")
-    return render_template('general_use_template.html', title_text="An Error Occurred.")
+    try:
+        met_group_list, project_title = fetch_met_group_records(metgroupid)
+        if len(met_group_list) > 0:
+            return render_template("project_detail_view.html",
+                                   project_title = project_title,
+                                   metgroupid = metgroupid,
+                                   met_group_list = met_group_list)
+        else:
+            flash("There are not currently any records created for this project. Please select the \"Create New Record\" option above.")
+            return home()
+    except:
+        flash("There was an error in retrieving the project detail.")
+        return render_template('general_use_template.html', title_text="An Error Occurred.")
 
 
 @app.route('/project-edit/<metgroupid>', methods = ['POST', 'GET'])
@@ -304,6 +308,28 @@ def addmultiples():
 
     except:
         flash("There was an error in creating multiple records.")
+        return render_template('general_use_template.html', title_text="An Error Occurred.")
+
+
+@app.route('/record-delete', methods = ['GET'])
+@login_required
+def record_delete():
+    user = User(session.get('mets_user', None))
+    if user.is_admin(0):
+        return abort(403)
+
+    uv_id = request.args.get('uv_id')
+
+    try:
+        success_delete_record = delete_record(uv_id)
+        if success_delete_record:
+            flash("Successfully deleted record")
+            return home()
+        else:
+            flash("There was an error in deleting record.")
+            return render_template('general_use_template.html', title_text="An Error Occurred.")
+    except:
+        flash("There was an error in deleting record.")
         return render_template('general_use_template.html', title_text="An Error Occurred.")
 
 
