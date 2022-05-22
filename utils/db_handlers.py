@@ -195,6 +195,19 @@ def record_github_status(uv_id, githubURL):
         con.close()
 
 
+def delete_record(uv_id):
+    try:
+        with sqlite3.connect(DB) as con:
+            cur = con.cursor()
+            cur.execute("""DELETE FROM metadata_ind_fields WHERE uv_id = ?""",(uv_id,) )
+            cur.execute("""DELETE FROM recordsummary WHERE uv_id = ?""", (uv_id,) )
+            con.commit()
+        return True
+    except:
+        return False
+    finally:
+        con.close()
+
 """Template DB Handlers"""
 
 def fetch_met_template(template_id):
