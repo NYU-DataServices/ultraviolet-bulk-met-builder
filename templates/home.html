@@ -1,0 +1,21 @@
+{% extends "header.html" %}
+
+{% block content %}
+
+<div class="row">
+    <div class="col-md-12">
+    <h2>Key Links</h2>
+        <ul>
+        <li><a href="https://github.com/NYU-DataServices/ultraviolet-metadata/projects/1">Github Metadata Authoring Project Board</a></li>
+        </ul>
+        <hr class="divider my-4" style="padding-bottom: 1.5rem;" />
+        {% for mesg in get_flashed_messages() %}
+        <div class="alert-messages"><p>{{ mesg }}</p></div>
+        {% endfor %}
+        </div>
+    </div>
+</div>
+
+{% include "footer.html" %}
+
+{% endblock %}
