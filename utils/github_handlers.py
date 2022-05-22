@@ -8,7 +8,7 @@ def uv_repo_push(path, message, content, update=False):
     author = InputGitAuthor(GITUSER, GITUSEREMAIL)
     try:
         if update:
-            contents = uvrepo.get_contents(path, ref=branch)
+            contents = uvrepo.get_contents(path, ref=GH_MET_BRANCH)
             uvrepo.update_file(contents.path, message, content, contents.sha, branch=GH_MET_BRANCH, author=author)
         else:
             uvrepo.create_file(path, message, content, branch=GH_MET_BRANCH, author=author)
