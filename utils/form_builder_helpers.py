@@ -153,7 +153,9 @@ def multi_single_field_helper(field_depth, default_value=""):
                          default_value,
                          main_label_size=head_val)
     elif field_depth["field_class_type"] == "IdentifierField":
-        return IdentifierField(field_depth["field_num"], default_vals_list=default_value)
+        return IdentifierField(field_depth["field_num"],
+                               [i for i in field_depth["enum_options"].split(',')],
+                               default_vals_list=default_value)
 
 
 

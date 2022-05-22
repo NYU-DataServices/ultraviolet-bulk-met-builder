@@ -213,10 +213,10 @@ class MultiSingleField():
 class IdentifierField():
     """Used to generate the full identifer field set (label, identifier value, identifier type)"""
 
-    def __init__(self, fieldNumber, main_label_size=False, default_vals_list=False):
+    def __init__(self, fieldNumber, enum_options, main_label_size=False, default_vals_list=False):
         self.fieldNumber = fieldNumber
-        self.placeholder = "e.g. 10.1093/ajae/aaq063"
-        self.schema_options = ["ror","doi","handle"]
+        self.placeholder = "e.g. orcid.org/0000-0001-0000-0000"
+        self.schema_options = enum_options
         self.jsonName = "identifiers"
         self.main_label_size = main_label_size
         self.default_vals_list = default_vals_list
@@ -243,6 +243,6 @@ class IdentifierField():
         if self.default_vals_list in [False, ""]:
             return label_html
         else:
-            label_html = label_html.replace('placeholder="e.g. 10.1093/ajae/aaq063"', 'value="{}"'.format(self.default_vals_list[0]))
+            label_html = label_html.replace('placeholder="' + self.placeholder + '"', 'value="{}"'.format(self.default_vals_list[0]))
             selected_value_reg = re.compile('option\svalue=\"{}\"'.format(self.default_vals_list[1]))
             return re.sub(selected_value_reg, 'option value="{}" selected'.format(self.default_vals_list[1]), label_html)
