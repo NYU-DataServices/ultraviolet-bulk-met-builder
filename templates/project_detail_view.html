@@ -15,13 +15,13 @@
                         {% if metgroup[5] == 1 %}
                             <li>Github status: pushed</li>
                             <li><a href="{{ metgroup[2] }}">View on GitHub</a></li>
-                            <li>{% if current_user.is_authenticated and (current_user.is_admin(2) or current_user.is_admin(1)) %}<a href="{{ url_for('record_git', uv_id = metgroup[0], metgroupnum = metgroupid, update = "True") }}">Update on Github</a>{% endif %}</li>
+                            {% if current_user.is_authenticated %}<li><a href="{{ url_for('record_git', uv_id = metgroup[0], metgroupnum = metgroupid, update = "True") }}">Update on Github</a></li>{% endif %}
                         {% else %}
                             <li>Github status: not pushed</li>
-                            <li>{% if current_user.is_authenticated and (current_user.is_admin(2) or current_user.is_admin(1)) %}<a href="{{ url_for('record_git', uv_id = metgroup[0], metgroupnum = metgroupid, update = "") }}">Push to Github</a>{% endif %}</li>
+                            {% if current_user.is_authenticated %}<li><a href="{{ url_for('record_git', uv_id = metgroup[0], metgroupnum = metgroupid, update = "") }}">Push to Github</a></li>{% endif %}
                         {% endif %}
-                        <li><a href="{{ url_for('record_delete', uv_id = metgroup[0]) }}">Delete record</a>
-                        <br/><em>Note: This will not remove it from Github if it has been pushed.</em></li>
+                        {% if current_user.is_authenticated %}<li><a href="{{ url_for('record_delete', uv_id = metgroup[0]) }}">Delete record</a>
+                        <br/><em>Note: This will not remove it from Github if it has been pushed.</em></li>{% endif %}
                         <!-- <li><a href="{{ metgroup[3] }}">view on UltraViolet</a></li> -->
                     </ul></p>
                     <hr/></li>
