@@ -231,8 +231,12 @@ def record_git(uv_id):
         return redirect(url_for('retrieve_project_detail', metgroupid = request.args.get('metgroupnum')))
 
     json_string = json.dumps(json.loads(zlib.decompress(json_hash).decode('utf-8')), indent = 4)
-    githubURL = 'metadata/UC-{}/ultraviolet.json'.format(uv_id)
-    success_push_github = uv_repo_push(githubURL, "Commit File", json_string, "main", update=False)
+    githubURL = 'metadata/{}/ultraviolet-{}.json'.format(uv_id, uv_id)
+    if_update = bool(request.args.get('update'))
+    template_info = [i for i in retrieve_current_templates() if i[0] == fetch_met_fields_vals(uv_id)[0][2]][0]
+    commit_text = commit_string_maker(if_update, user, template_info)
+
+    success_push_github = uv_repo_push(githubURL, commit_text, json_string, update=if_update)
     if success_push_github:
         record_github_status(uv_id, 'https://github.com/' +
                              GH_BASEREPO + '/tree/main/' +
