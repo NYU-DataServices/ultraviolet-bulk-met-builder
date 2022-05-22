@@ -38,7 +38,7 @@ mail = Mail(app)
 
 @app.route('/', methods = ['GET'])
 def home():
-    return render_template('general_use_template.html')
+    return render_template('home.html')
 
 
 """ Project management routes """
