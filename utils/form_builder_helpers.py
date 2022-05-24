@@ -56,13 +56,15 @@ def template_to_json_builder(json_template, request_form_dict):
     :return: str
     """
     final_grouped_fields_dict, field_key_order = form_inputs_parser(request_form_dict)
+
     count = 0
     met_json_complete = {}
     while count < len(json_template):
         if isinstance(final_grouped_fields_dict[field_key_order[count]], dict):
             if len(final_grouped_fields_dict[field_key_order[count]]) == 1:
                 met_json_complete.update(json.loads("{" + json_template[count].format(*['"' + i[2] + \
-                                                    '"' for i in final_grouped_fields_dict[field_key_order[count]]["1"]]) + "}"))
+                                                '"' for i in final_grouped_fields_dict[field_key_order[count]]["1"]]) + "}"))
+
             else:
                 multival_parent_key = str(re.search(r'\"[_a-z]{1,}\"', json_template[count])[0].replace('"', ''))
                 multival_dict = {multival_parent_key:[]}
@@ -70,10 +72,12 @@ def template_to_json_builder(json_template, request_form_dict):
                     single_append_rec = json_template[count].split(': [', 1)[1].rstrip()[0:-1]
                     multival_dict[multival_parent_key].append(json.loads(single_append_rec.format(*['"' + i[2] + '"' for i \
                                                                 in final_grouped_fields_dict[field_key_order[count]][grouping_key]])))
+
                 met_json_complete.update(multival_dict)
         else:
             met_json_complete.update(json.loads("{" + json_template[count].format('"' + \
-                                              final_grouped_fields_dict[field_key_order[count]][2] + '"') + "}"))
+                                          final_grouped_fields_dict[field_key_order[count]][2] + '"') + "}"))
+
         count+=1
 
     return json.dumps(met_json_complete)
@@ -168,7 +172,6 @@ def parse_field_info_db(template_fields):
     """
 
     template_fields = arrange_children(template_fields)
-
     met_form_template = []
     for field_num in sorted(set(list(template_fields.keys()))):
         # Must be a SingleField or EnumField if there are no child fields
@@ -270,7 +273,7 @@ def template_html_field_analyzer(field_num, template_fields, list_default_values
     :return: (list, int)
     """
     met_form_template = []
-    # Must be a SingleField or EnumField if no children present
+        # Must be a SingleField or EnumField if no children present
     if len(template_fields[field_num]["children"]) == 0:
         met_form_template.append(
             multi_single_field_helper(template_fields[field_num], list_default_values[vcounter][6]).html())

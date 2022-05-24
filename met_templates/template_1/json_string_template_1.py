@@ -31,8 +31,15 @@ json_string_template = [
     """
     "additional_titles": [{{
       "title": {},
-      "type": {},
-      "lang": {}
+      "type": {{
+	   "id": {},
+	   "title": {{
+	   "en": {}
+	   }}
+	   }},
+      "lang": {{
+	 "id": {}
+	 }}
     }}]
     """,
     """
@@ -43,9 +50,100 @@ json_string_template = [
     """,
     """
     "subjects": [{{
-      "subject": {},
-      "identifier": {},
-      "scheme": {}
+      "subject": {}
+    }}]
+    """,
+    """
+    "description": {}
+    """,
+    """
+    "additional_descriptions": [{{
+    "description": {},
+	"type": {{
+	    "id": {},
+		"title": {{
+		    "en": {}
+		}}
+	}},
+	"lang": {{
+	    "id": {}
+		}}
+    }}]
+    """,
+    """
+    "rights": [{{
+    "title": {{
+	"en": {}
+	}},
+    "description": {{
+	"en": {} 
+	}},
+    "link": {}
+    }}]
+    """,
+    """
+    "contributors": [{{
+      "person_or_org": {{
+        "family_name": {},
+        "given_name": {},
+        "identifiers": [{{
+          "identifier": {},
+          "scheme": {}
+        }}],
+        "name": {},
+        "type": {}
+      }},
+      "affiliations": [{{
+        "identifiers": [{{
+          "identifier": {},
+          "scheme": {}
+          }}]
+        }}],
+       "role": {}
+    }}]
+    """,
+    """
+    "languages": [{{
+    "id": {}
+	}}]
+    """,
+    """
+    "dates": [{{
+    "date": {},
+    "type": {{
+      "id": {},
+      "title": {{
+        "en": {}
+      }}
+    }},
+    "description": {}
+    }}]
+    """,
+    """
+    "version": {}
+    """,
+    """
+    "identifiers": [{{
+    "identifier": {},
+    "scheme": {}
+    }}]
+    """,
+    """
+    "related_identifiers": [{{
+    "identifier": {},
+    "scheme": {},
+    "relation_type": {{
+      "id": {},
+      "title": {{
+        "en": {}
+      }}
+    }},
+    "resource_type": {{
+      "id": {},
+      "title": {{
+        "en": {}
+      }}
+    }}
     }}]
     """
 ]
