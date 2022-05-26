@@ -7,7 +7,7 @@ from settings import ENDPOINT_URL, UV_TOKEN
 
 requests.packages.urllib3.disable_warnings(category=InsecureRequestWarning)
 
-def get_draft_id(insert_record):
+def get_draft_id():
     header = {
         'content-type': 'application/json',
         'authorization': 'Bearer {}'.format(UV_TOKEN)
