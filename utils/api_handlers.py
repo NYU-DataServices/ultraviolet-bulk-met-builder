@@ -7,7 +7,7 @@ from settings import ENDPOINT_URL, UV_TOKEN
 
 requests.packages.urllib3.disable_warnings(category=InsecureRequestWarning)
 
-def get_draft_id():
+def get_draft_id(insert_record):
     header = {
         'content-type': 'application/json',
         'authorization': 'Bearer {}'.format(UV_TOKEN)
@@ -36,6 +36,7 @@ def get_draft_id():
                       timeout=1)
             if r.status_code == 201:
                 return True, json.loads(r.text)["id"]
+                break
             else:
                 num_times-=1
                 continue
