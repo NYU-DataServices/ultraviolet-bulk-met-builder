@@ -31,10 +31,18 @@ class SingleField():
         else:
             insert_label = self.labelName
 
-        return '<label for="text" class="col-md-2 col-form-label">{}</label>' \
+        if self.labelName == "Description":
+            inputtype = 'textarea cols="4" rows="20"'
+            closetag = '</textarea>'
+        else:
+            inputtype = 'input type="text"'
+            closetag = ''
+
+        return '<label for="text" class="col-md-4 col-form-label">{}</label>' \
                '<div class="col-md-4"><div class="input-group">' \
-               '<input type="text" class="form-control" id="{}" name="singleField_{}_{}_{}_{}" {}>' \
-               '</div></div>'.format(insert_label, elct, self.fieldNumber, self.jsonName, elct, parent_append_id, pl_hlder)
+               '<{} class="form-control" id="{}" name="singleField_{}_{}_{}_{}" {}>{}' \
+               '</div></div>'.format(insert_label, inputtype, elct, self.fieldNumber, self.jsonName,
+                                     elct, parent_append_id, pl_hlder, closetag)
 
 
 class EnumField():
@@ -57,7 +65,7 @@ class EnumField():
         else:
             insert_label = self.labelName
 
-        label_html = '<label for="select" class="col-md-2 col-form-label">{}</label>' \
+        label_html = '<label for="select" class="col-md-4 col-form-label">{}</label>' \
                      '<div class="col-md-4"><select id="{}" name="enumField_{}_{}_{}_{}" ' \
                      'class="custom-select">'.format(insert_label, elct, self.fieldNumber, self.jsonName, elct, parent_append_id) + \
                     "".join(['<option value="{}">{}</option>'.format(defval.lower(), defval)
@@ -83,7 +91,7 @@ class MultiVals():
             insert_label = '<div class="col-md-2">{}</div>'.format(labelName)
         else:
             if not accordion:
-                insert_label = '<div class="col-md-2"><h{}>{}</h{}></div>'.format(main_label_size, labelName, main_label_size)
+                insert_label = '<div class="col-md-4"><h{}>{}</h{}></div>'.format(main_label_size, labelName, main_label_size)
 
             else:
                 insert_label = '<div class="accordion md-accordion" id="accordion_{}" role="tablist" aria-multiselectable="true">' \
@@ -159,10 +167,10 @@ class MultiSingleField():
         else:
             elct = shortuuid.uuid()[0:5]
         if not self.main_label_size:
-            insert_label = '<div class="col-md-2">{}</div>'.format(self.labelName)
+            insert_label = '<div class="col-md-4">{}</div>'.format(self.labelName)
         else:
             if not self.accordion:
-                insert_label = '<div class="col-md-2"><h{}>{}</h{}></div>'.format(self.main_label_size, self.labelName,
+                insert_label = '<div class="col-md-4"><h{}>{}</h{}></div>'.format(self.main_label_size, self.labelName,
                                                                                   self.main_label_size)
 
             else:
