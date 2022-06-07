@@ -11,12 +11,16 @@ import re
 class SingleField():
     """Used for key-value pairs with a single string as value and represented as text input in html form"""
 
-    def __init__(self, fieldNumber, labelName, jsonName, default_value, main_label_size=False):
+    def __init__(self, fieldNumber, labelName, jsonName, default_value, main_label_size=False,
+                 help_text=False, is_large_text=False, hide_label=False):
         self.fieldNumber = fieldNumber
         self.labelName = labelName
         self.jsonName = jsonName
         self.default_value = default_value
         self.main_label_size = main_label_size
+        self.help_text = help_text
+        self.is_large_text = is_large_text
+        self.hide_label = hide_label
 
     def html(self, parent_append_id=False):
         if not parent_append_id:
@@ -26,44 +30,58 @@ class SingleField():
             pl_hlder = 'value="' + self.default_value + '"'
         else:
             pl_hlder = ""
-        if self.main_label_size != False:
-            insert_label = '<h{}>{}</h{}>'.format(self.main_label_size, self.labelName, self.main_label_size)
+        if self.hide_label == 0:
+            if self.main_label_size != False:
+                insert_label = '<label for="text" class="col-md-4 col-form-label"><h{}>{}</h{}></label>'.format(self.main_label_size, self.labelName, self.main_label_size)
+            else:
+                insert_label = '<label for="text" class="col-md-4 col-form-label">{}</label>'.format(self.labelName)
         else:
-            insert_label = self.labelName
+            insert_label = ''
 
-        if self.labelName == "Description":
+        if self.help_text != 'NONE' and self.help_text != False:
+            insert_help = '<div class="col-md-4"><p><em>' + self.help_text + '</em></p></div>'
+        else:
+            insert_help = ''
+
+        if self.is_large_text == 1:
             inputtype = 'textarea cols="4" rows="20"'
             closetag = '</textarea>'
+
         else:
             inputtype = 'input type="text"'
             closetag = ''
 
-        return '<label for="text" class="col-md-4 col-form-label">{}</label>' \
-               '<div class="col-md-4"><div class="input-group">' \
+        return '{}{}<div class="col-md-4"><div class="input-group">' \
                '<{} class="form-control" id="{}" name="singleField_{}_{}_{}_{}" {}>{}' \
-               '</div></div>'.format(insert_label, inputtype, elct, self.fieldNumber, self.jsonName,
+               '</div></div>'.format(insert_label, insert_help, inputtype, elct, self.fieldNumber, self.jsonName,
                                      elct, parent_append_id, pl_hlder, closetag)
 
 
 class EnumField():
     """Used for key-value pairs with a single string as value and represented as dropdown input in html form"""
 
-    def __init__(self, fieldNumber, labelName, jsonName, default_list_values, default_value="", main_label_size=False):
+    def __init__(self, fieldNumber, labelName, jsonName, default_list_values, default_value="",
+                 main_label_size=False, help_text=False, hide_label=False):
         self.fieldNumber = fieldNumber
         self.labelName = labelName
         self.jsonName = jsonName
         self.default_list_values = default_list_values
         self.default_value = default_value
         self.main_label_size = main_label_size
+        self.help_text = help_text
+        self.hide_label = hide_label
 
     def html(self, parent_append_id=False):
         if not parent_append_id:
             parent_append_id = shortuuid.uuid()[0:5]
         elct = shortuuid.uuid()[0:5]
-        if self.main_label_size != False:
-            insert_label = '<h{}>{}</h{}>'.format(self.main_label_size, self.labelName, self.main_label_size)
+        if self.hide_label == 0:
+            if self.main_label_size != False:
+                insert_label = '<h{}>{}</h{}>'.format(self.main_label_size, self.labelName, self.main_label_size)
+            else:
+                insert_label = self.labelName
         else:
-            insert_label = self.labelName
+            insert_label = ''
 
         label_html = '<label for="select" class="col-md-4 col-form-label">{}</label>' \
                      '<div class="col-md-4"><select id="{}" name="enumField_{}_{}_{}_{}" ' \
@@ -82,10 +100,12 @@ class EnumField():
 class MultiVals():
     """Used for complex key-value pairs with a list/array as a value, and requires subvalues consisting of complex or simple fields, or both"""
 
-    def __init__(self, labelName, jsonName, values_list, main_label_size=False, accordion=False, allow_add_row=False):
+    def __init__(self, labelName, jsonName, values_list, main_label_size=False, accordion=False,
+                 allow_add_row=False, help_text=False):
         self.labelName = labelName
         self.jsonName = jsonName
         self.value_list = values_list
+        self.help_text = help_text
         elct = shortuuid.uuid()[0:5]
         if not main_label_size:
             insert_label = '<div class="col-md-2">{}</div>'.format(labelName)
@@ -152,7 +172,8 @@ class MultiDictMixer():
 class MultiSingleField():
     """Used to construct a single key-value whose children consist of multiple Single, Enum, or Identifier Fields"""
 
-    def __init__(self, labelName, jsonName, listSingleVals, main_label_size=False, accordion=False, allow_add_row=False):
+    def __init__(self, labelName, jsonName, listSingleVals, main_label_size=False, accordion=False,
+                 allow_add_row=False, help_text=False):
         self.labelName = labelName
         self.jsonName = jsonName
         self.listSingleVals = listSingleVals
@@ -160,6 +181,7 @@ class MultiSingleField():
         self.main_label_size = main_label_size
         self.accordion = accordion
         self.allow_add_row = allow_add_row
+        self.help_text = help_text
 
     def html(self, parent_pass_id=False):
         if parent_pass_id != False:
@@ -221,13 +243,14 @@ class MultiSingleField():
 class IdentifierField():
     """Used to generate the full identifer field set (label, identifier value, identifier type)"""
 
-    def __init__(self, fieldNumber, enum_options, main_label_size=False, default_vals_list=False):
+    def __init__(self, fieldNumber, enum_options, main_label_size=False, default_vals_list=False, help_text=False):
         self.fieldNumber = fieldNumber
         self.placeholder = "e.g. orcid.org/0000-0001-0000-0000"
         self.schema_options = enum_options
         self.jsonName = "identifiers"
         self.main_label_size = main_label_size
         self.default_vals_list = default_vals_list
+        self.help_text = help_text
 
     def html(self, parent_append_id=False):
         if not parent_append_id:
