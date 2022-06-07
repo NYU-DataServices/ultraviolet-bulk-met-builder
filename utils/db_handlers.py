@@ -230,6 +230,9 @@ def fetch_met_template(template_id):
                     "add_row":row[9],
                     "enum_options":row[10],
                     "string_representation":row[11],
+                    "help_text":row[12],
+                    "is_large_text":row[13],
+                    "hide_label":row[14],
                     "children":[]
                 }
                 template_fields.append(single_template_fields)

@@ -148,18 +148,24 @@ def multi_single_field_helper(field_depth, default_value=""):
                            field_depth["label_name"],
                            field_depth["json_name"],
                            default_value,
-                           main_label_size=head_val)
+                           main_label_size=head_val,
+                           help_text = field_depth["help_text"],
+                           is_large_text = field_depth["is_large_text"],
+                           hide_label = field_depth["hide_label"])
     elif field_depth["field_class_type"] == "EnumField":
         return EnumField(field_depth["field_num"],
                          field_depth["label_name"],
                          field_depth["json_name"],
                          [i for i in field_depth["enum_options"].split(',')],
                          default_value,
-                         main_label_size=head_val)
+                         main_label_size=head_val,
+                         help_text = field_depth["help_text"],
+                         hide_label = field_depth["hide_label"])
     elif field_depth["field_class_type"] == "IdentifierField":
         return IdentifierField(field_depth["field_num"],
                                [i for i in field_depth["enum_options"].split(',')],
-                               default_vals_list=default_value)
+                               default_vals_list=default_value,
+                               help_text = field_depth["help_text"])
 
 
 
@@ -192,12 +198,14 @@ def parse_field_info_db(template_fields):
                                 sub_multi_single_fields.append(MultiSingleField(subfield_depth2["label_name"],
                                                                                 subfield_depth2["json_name"],
                                                                                 [multi_single_field_helper(i) for i \
-                                                                                 in subfield_depth2["children"]]))
+                                                                                 in subfield_depth2["children"]],
+                                                                                help_text = subfield_depth2["help_text"]))
 
                         multidictmixer.append(MultiSingleField(subfield_depth1["label_name"],
                                                                subfield_depth1["json_name"],
                                                                sub_multi_single_fields,
-                                                               subfield_depth1["header_val"]))
+                                                               subfield_depth1["header_val"],
+                                                               help_text = subfield_depth1["help_text"]))
 
                     else:
                         multidictmixer.append(multi_single_field_helper(subfield_depth1))
@@ -211,7 +219,8 @@ def parse_field_info_db(template_fields):
                                                list_multivals,
                                                template_fields[field_num]["header_val"],
                                                accordion=accord_val,
-                                               allow_add_row=row_val).html)
+                                               allow_add_row=row_val,
+                                               help_text = template_fields[field_num]["help_text"]).html)
 
         elif template_fields[field_num]["field_class_type"] == "MultiSingleField":
             list_multivals = []
@@ -226,7 +235,8 @@ def parse_field_info_db(template_fields):
                                                       list_multivals,
                                                       template_fields[field_num]["header_val"],
                                                       accordion=accord_val,
-                                                      allow_add_row=row_val).html())
+                                                      allow_add_row=row_val,
+                                                      help_text = template_fields[field_num]["help_text"]).html())
 
     return "".join([i for i in met_form_template])
 
