@@ -330,7 +330,7 @@ def template_html_field_analyzer(field_num, template_fields, list_default_values
                                          subfield_depth1["header_val"]))
 
                 else:
-                    if subfield_depth1["field_class_type"] == "IdentiferField":
+                    if subfield_depth1["field_class_type"] == "IdentifierField":
                         multidictmixer.append(
                             multi_single_field_helper(subfield_depth1,
                                                     [list_default_values[vcounter][6],
@@ -389,7 +389,6 @@ def parse_previous_field_info_db(template_fields, list_default_values):
         except:
             accordion_default_values[d_val[3]] = [d_val]
     list_default_values = [i for i in list_default_values if i[4] != 1]
-
     vcounter = 0
     met_form_template = []
     for field_group_num in sorted(set(list(template_fields.keys()))):
@@ -430,7 +429,6 @@ def parse_previous_field_info_db(template_fields, list_default_values):
 
                 met_form_template[-1] = new_accordion_html
                 r_count+=1
-
     return met_form_template
 
 

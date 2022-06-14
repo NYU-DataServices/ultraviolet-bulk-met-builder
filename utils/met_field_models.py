@@ -26,7 +26,7 @@ class SingleField():
         if not parent_append_id:
             parent_append_id = shortuuid.uuid()[0:5]
         elct = shortuuid.uuid()[0:5]
-        if self.default_value != "":
+        if self.default_value != "" and self.is_large_text != 1:
             pl_hlder = 'value="' + self.default_value + '"'
         else:
             pl_hlder = ""
@@ -45,7 +45,7 @@ class SingleField():
 
         if self.is_large_text == 1:
             inputtype = 'textarea cols="4" rows="20"'
-            closetag = '</textarea>'
+            closetag = self.default_value + '</textarea>'
 
         else:
             inputtype = 'input type="text"'
@@ -83,9 +83,14 @@ class EnumField():
         else:
             insert_label = ''
 
-        label_html = '<label for="select" class="col-md-4 col-form-label">{}</label>' \
+        if self.help_text != 'NONE' and self.help_text != False:
+            insert_help = '<div class="col-md-4"><p><em>' + self.help_text + '</em></p></div>'
+        else:
+            insert_help = ''
+
+        label_html = '<label for="select" class="col-md-4 col-form-label">{}</label>{}' \
                      '<div class="col-md-4"><select id="{}" name="enumField_{}_{}_{}_{}" ' \
-                     'class="custom-select">'.format(insert_label, elct, self.fieldNumber, self.jsonName, elct, parent_append_id) + \
+                     'class="custom-select">'.format(insert_label, insert_help, elct, self.fieldNumber, self.jsonName, elct, parent_append_id) + \
                     "".join(['<option value="{}">{}</option>'.format(defval.lower(), defval)
                              for defval in self.default_list_values]) + \
                      '</select></div>'
@@ -274,6 +279,7 @@ class IdentifierField():
         if self.default_vals_list in [False, ""]:
             return label_html
         else:
+            print("Here it is: ", self.default_vals_list)
             label_html = label_html.replace('placeholder="' + self.placeholder + '"', 'value="{}"'.format(self.default_vals_list[0]))
             selected_value_reg = re.compile('option\svalue=\"{}\"'.format(self.default_vals_list[1]))
             return re.sub(selected_value_reg, 'option value="{}" selected'.format(self.default_vals_list[1]), label_html)

@@ -22,7 +22,8 @@ json_string_template = [
           "scheme": {}
         }}],
         "name": {}
-      }}]
+      }}],
+      "role": {}
     }}]
     """,
     """
